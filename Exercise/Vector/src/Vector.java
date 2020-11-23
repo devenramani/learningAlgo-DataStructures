@@ -40,7 +40,12 @@ public class Vector
 	
 	public void addFirst(Object item)
 	{
-		// add your code
+		for(int i=count-1;i>=0;i--)
+		{
+			data[i+1] = data[i];
+		}
+		data[0]=item;
+		count++;
 	}
 
 	public void addLast(Object o)
@@ -65,24 +70,53 @@ public class Vector
 	}
 	*/
 
-//	public Object getFirst()
-//	{
-//		// add your code
-//	}
+	public Object getFirst()
+	{
+		return data[0];
+	}
 
-//	public Object getLast()
-//	{
-//		// add your code
-//	}
+	public Object getLast()
+	{
+		return (data[count - 1]);
+		
+	}
 
 	public void removeLast()
 	{
-		// add your code
+		data[count -1] = null; 
+		count--;
 	} 
 
 	public void removeFirst()
 	{
-		// add your code
+		for(int i=0;i<count-1;i++)
+		{
+			data[i] = data[i+1];
+		}
+		data[count]= null;
+		count--;
 	}
 	
+	public String toString() 
+	{
+		String str = "";
+		
+		for(int i=0;i<count;i++)
+		{
+			str += " " + data[i]; 
+		}
+		return str;
+	}
+	
+	public void reverse() {
+		
+		Object temp;
+
+		for(int i=0;i<count/2;i++)
+		{
+			temp = data[i];
+			data[i] = data[count - i - 1];
+			data[count - i - 1] = temp;
+		}
+	}
 }
