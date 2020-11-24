@@ -50,6 +50,10 @@ public class Vector
 
 	public void addLast(Object o)
 	{
+		if(count >= data.length)
+		{
+			this.extendCapacity();
+		}
 		data[count] = o;
 		count++;
 	}
@@ -112,11 +116,42 @@ public class Vector
 		
 		Object temp;
 
-		for(int i=0;i<count/2;i++)
+		for(int i=0;i<this.count/2;i++)
 		{
 			temp = data[i];
 			data[i] = data[count - i - 1];
 			data[count - i - 1] = temp;
 		}
+	}
+	
+	public Vector repeat() {
+		Vector tempVector = new Vector(2 * count);
+		
+		for(int i=0;i<count;i++)
+		{
+			tempVector.addLast(data[i]);
+			tempVector.addLast(data[i]);
+		}
+		return tempVector;
+	}
+	
+	public Vector interleave(Vector interleaveVector) {
+		Vector tempVector = new Vector(2 *count);
+		
+		for(int i=0;i<count;i++)
+		{
+			tempVector.addLast(data[i]);
+			tempVector.addLast(interleaveVector.data[i]);
+		}
+		return tempVector;
+	}
+	
+	public void extendCapacity() {
+		Vector extendedVector = new Vector(2 * count);
+		for(int i=0;i<count;i++)
+		{
+			extendedVector.addLast(data[i]);
+		}
+		this.data = extendedVector.data;		
 	}
 }
