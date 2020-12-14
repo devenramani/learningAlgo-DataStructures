@@ -6,6 +6,8 @@ public class Client {
 	
 	int uniqueId;
 	
+	Room clientRoom;
+	
 	public Client(String name, String emailAddress, int uniqueId) {
 		this.name = name;
 		this.emailAddress = emailAddress;
@@ -16,4 +18,16 @@ public class Client {
 		return this.uniqueId;
 	}
 	
+	public void setClientRoom(Room clientRoom) {
+		this.clientRoom = clientRoom;
+	}
+	
+	public Room getClientRoom() {
+		return this.clientRoom;
+	}
+	
+	public boolean checkOutClient() {
+		this.clientRoom = null;
+		return true;
+	}
 }

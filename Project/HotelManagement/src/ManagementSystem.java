@@ -46,22 +46,33 @@ public class ManagementSystem implements IManagementSystem {
 		return client.getClientId();
 	}
 
-	@Override
-	public void printRooms() {
-		System.out.println("\n-- Double Rooms --");
-		// printing all the doubleRooms
+	public Vector getAllRooms() {
+		Vector allRooms = new Vector(100);
+
 		for (int i = 0; i < doubleRooms.size(); i++) {
 			DoubleRoom doubleRoom = (DoubleRoom) doubleRooms.get(i);
-			System.out.println(doubleRoom.roomNumber + " | " + doubleRoom.status);
+			allRooms.addLast(doubleRoom);
 		}
 
-		System.out.println("\n-- Family Rooms --");
-		// printing all the familyRooms
 		for (int i = 0; i < familyRooms.size(); i++) {
 			FamilyRoom familyRoom = (FamilyRoom) familyRooms.get(i);
-			System.out.println(familyRoom.roomNumber + " | " + familyRoom.status);
+			allRooms.addLast(familyRoom);
 		}
 
+		return allRooms;
+	}
+
+	@Override
+	public void printRooms() {
+
+		System.out.println("\n-- All Rooms --");
+
+		Vector allRooms = getAllRooms();
+
+		for (int i = 0; i < allRooms.size(); i++) {
+			Room room = (Room) allRooms.get(i);
+			System.out.println(room.roomNumber + " | " + room.status);
+		}
 	}
 
 	@Override
@@ -74,40 +85,93 @@ public class ManagementSystem implements IManagementSystem {
 		}
 	}
 
+	public Room getNextAvailableRoom(Vector rooms) {
+		int uniqueId = 0;
+		Room nextAvailableRoom = (Room) rooms.get(uniqueId);
+
+		while (nextAvailableRoom.getStatus() != Global.RoomStatus.READY.toString()) {
+			uniqueId++;
+			nextAvailableRoom = (Room) rooms.get(uniqueId);
+		}
+
+		return nextAvailableRoom;
+
+	}
+
 	@Override
 	public int checkInDoubleRoom(int client) {
-		// TODO Auto-generated method stub
-		return 0;
+		Room checkInRoom = getNextAvailableRoom(doubleRooms);
+
+		Client c = (Client) clients.get(client);
+		c.setClientRoom(checkInRoom);
+
+		checkInRoom.setStatus(Global.RoomStatus.OCCUPIED.toString());
+
+		System.out.println("\nChecked in Double Room : " + checkInRoom.getRoomNumber() + " with Client : " + c.name);
+
+		return checkInRoom.getRoomId();
 	}
 
 	@Override
 	public int checkInFamilyRoom(int client) {
-		// TODO Auto-generated method stub
-		return 0;
+		Room checkInRoom = getNextAvailableRoom(familyRooms);
+
+		Client c = (Client) clients.get(client);
+		c.setClientRoom(checkInRoom);
+
+		checkInRoom.setStatus(Global.RoomStatus.OCCUPIED.toString());
+
+		System.out.println("\nChecked in Double Room : " + checkInRoom.getRoomNumber() + " with Client : " + c.name);
+
+		return checkInRoom.getRoomId();
 	}
 
 	@Override
 	public boolean checkOutRoom(int client) {
-		// TODO Auto-generated method stub
-		return false;
+		Client c = (Client) clients.get(client);
+		Room room = c.getClientRoom();
+		room.setStatus(Global.RoomStatus.READY.toString());
+		return c.checkOutClient();
 	}
 
 	@Override
 	public Vector searchAvailableRooms() {
-		// TODO Auto-generated method stub
-		return null;
+		Vector allRooms = getAllRooms();
+		Vector availableRooms = new Vector(100);
+
+		for (int i = 0; i < allRooms.size(); i++) {
+			Room room = (Room) allRooms.get(i);
+			if (room.getStatus() == Global.RoomStatus.READY.toString()) {
+				availableRooms.addLast(room);
+			}
+		}
+		return availableRooms;
 	}
 
 	@Override
 	public void printAvailableRooms() {
-		// TODO Auto-generated method stub
+		Vector availableRooms = searchAvailableRooms();
 
+		System.out.println("\n-- Available Rooms --");
+
+		for (int i = 0; i < availableRooms.size(); i++) {
+			Room room = (Room) availableRooms.get(i);
+			System.out.println(room.roomNumber + " | " + room.status);
+		}
 	}
 
 	@Override
 	public void printOccupiedRooms() {
-		// TODO Auto-generated method stub
+		Vector allRooms = getAllRooms();
 
+		System.out.println("\n-- Occupied Rooms --");
+
+		for (int i = 0; i < allRooms.size(); i++) {
+			Room room = (Room) allRooms.get(i);
+			if (room.getStatus() != Global.RoomStatus.READY.toString()) {
+				System.out.println(room.roomNumber + " | " + room.status);
+			}
+		}
 	}
 
 	@Override

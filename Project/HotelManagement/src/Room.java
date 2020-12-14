@@ -21,4 +21,17 @@
 	public int getRoomId() {
 		return this.uniqueId;
 	}
+	
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
+	public String getStatus() {
+		return this.status;
+	}
+	
+	public int getRoomNumber() {
+		return this.roomNumber;
+	}
+		
 }
