@@ -10,7 +10,7 @@ public class Vector {
 	public int size() {
 		return count;
 	}
-
+ 
 	public boolean isEmpty() {
 		return size() == 0;
 	}

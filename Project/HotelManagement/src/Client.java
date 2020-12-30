@@ -1,17 +1,21 @@
 
 public class Client {
 	
-	String name;
-	String emailAddress;
+	private String name;
+	private String emailAddress;
 	
-	int uniqueId;
+	private int uniqueId;
 	
 	Room clientRoom;
 	
 	public Client(String name, String emailAddress, int uniqueId) {
-		this.name = name;
-		this.emailAddress = emailAddress;
+		this.setName(name);
+		this.setEmailAddress(emailAddress);
 		this.uniqueId = uniqueId;
+	}
+	
+	public Client() {
+		//empty constructor
 	}
 	
 	public int getClientId() {
@@ -29,5 +33,21 @@ public class Client {
 	public boolean checkOutClient() {
 		this.clientRoom = null;
 		return true;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 }
