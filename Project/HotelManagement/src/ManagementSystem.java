@@ -6,6 +6,10 @@ public class ManagementSystem implements IManagementSystem {
 	private Vector familyRooms = new Vector(50);
 	private Vector clients = new Vector(50);
 
+	private Queue roomsToBeCleaned = new Queue(50);
+
+	Graph hotelBuilding = new Graph();
+
 	AtomicLong generateClientUniqueID = new AtomicLong(1);
 	AtomicLong generateRoomUniqueID = new AtomicLong(1);
 
@@ -15,7 +19,8 @@ public class ManagementSystem implements IManagementSystem {
 		int uniqueId = (int) generateRoomUniqueID.getAndIncrement();
 
 		// creating DoubleRoom object
-		DoubleRoom doubleRoom = new DoubleRoom(wing, roomNumber, uniqueId, status);
+		Graph.Node wingNode = hotelBuilding.findNode(wing);
+		DoubleRoom doubleRoom = new DoubleRoom(wingNode, roomNumber, uniqueId, status);
 
 		// adding object to doubleRoom vector
 		doubleRooms.addLast(doubleRoom);
@@ -29,7 +34,8 @@ public class ManagementSystem implements IManagementSystem {
 		int uniqueId = (int) generateRoomUniqueID.getAndIncrement();
 
 		// creating familyRoom object
-		FamilyRoom familyRoom = new FamilyRoom(wing, roomNumber, uniqueId, status);
+		Graph.Node wingNode = hotelBuilding.findNode(wing);
+		FamilyRoom familyRoom = new FamilyRoom(wingNode, roomNumber, uniqueId, status);
 
 		// adding object to familyRooms vector
 		familyRooms.addLast(familyRoom);
@@ -98,7 +104,8 @@ public class ManagementSystem implements IManagementSystem {
 		for (int i = 0; i < roomsSize; i++) {
 			Room nextAvailableRoom = (Room) rooms.get(i);
 
-			if (nextAvailableRoom.getStatus() == Global.RoomStatus.READY.toString() || nextAvailableRoom.getStatus() == Global.RoomStatus.CHECKED_OUT.toString()) {
+			if (nextAvailableRoom.getStatus() == Global.RoomStatus.READY.toString()
+					|| nextAvailableRoom.getStatus() == Global.RoomStatus.CHECKED_OUT.toString()) {
 				nextRoom = nextAvailableRoom;
 				break;
 			}
@@ -106,16 +113,16 @@ public class ManagementSystem implements IManagementSystem {
 		return nextRoom;
 
 	}
-	
+
 	public Client getClient(int clientId) {
-		
+
 		int clientVectorSize = clients.size();
-		
+
 		Client client = new Client();
-		
-		for (int i = 0;i< clientVectorSize; i++) {
+
+		for (int i = 0; i < clientVectorSize; i++) {
 			Client c = (Client) clients.get(i);
-			if(c.getClientId() == clientId) {
+			if (c.getClientId() == clientId) {
 				client = c;
 				break;
 			}
@@ -128,9 +135,11 @@ public class ManagementSystem implements IManagementSystem {
 		Room checkInRoom = getNextAvailableRoom(doubleRooms);
 		if (checkInRoom.getRoomNumber() != 0) {
 			Client client = getClient(clientId);
-			
-			if(client.getClientId() == 0) {return 0;}
-			
+
+			if (client.getClientId() == 0) {
+				return 0;
+			}
+
 			client.setClientRoom(checkInRoom);
 
 			checkInRoom.setStatus(Global.RoomStatus.OCCUPIED.toString());
@@ -150,9 +159,11 @@ public class ManagementSystem implements IManagementSystem {
 		Room checkInRoom = getNextAvailableRoom(familyRooms);
 		if (checkInRoom.getRoomNumber() != 0) {
 			Client client = getClient(clientId);
-			
-			if(client.getClientId() == 0) {return 0;}
-			
+
+			if (client.getClientId() == 0) {
+				return 0;
+			}
+
 			client.setClientRoom(checkInRoom);
 
 			checkInRoom.setStatus(Global.RoomStatus.OCCUPIED.toString());
@@ -169,12 +180,13 @@ public class ManagementSystem implements IManagementSystem {
 
 	@Override
 	public boolean checkOutRoom(int clientId) {
-		
+
 		Client client = getClient(clientId);
 
 		if (client != null && client.getClientRoom() != null) {
 			Room room = client.getClientRoom();
 			room.setStatus(Global.RoomStatus.CHECKED_OUT.toString());
+			roomsToBeCleaned.push(room);
 			System.out.println("\nCheckout Successfull.");
 			return client.checkOutClient();
 		} else {
@@ -215,7 +227,7 @@ public class ManagementSystem implements IManagementSystem {
 		Vector allRooms = getAllRooms();
 
 		System.out.println("\n-- Occupied Rooms --");
-		
+
 		System.out.println("Wing \tRoom \tStatus \tClientId \tClientName\n");
 
 		for (int i = 0; i < allRooms.size(); i++) {
@@ -223,7 +235,8 @@ public class ManagementSystem implements IManagementSystem {
 			if (room.getStatus() != Global.RoomStatus.READY.toString()
 					&& room.getStatus() != Global.RoomStatus.CHECKED_OUT.toString()) {
 				Client clientInRoom = room.getClientInRoom();
-				System.out.println(room.getWing() + "\t" + room.getRoomNumber() + "\t" + room.getStatus() + "\t" + clientInRoom.getClientId() +"\t" + clientInRoom.getName());
+				System.out.println(room.getWing() + "\t" + room.getRoomNumber() + "\t" + room.getStatus() + "\t"
+						+ clientInRoom.getClientId() + "\t" + clientInRoom.getName());
 			}
 		}
 	}
@@ -231,19 +244,73 @@ public class ManagementSystem implements IManagementSystem {
 	@Override
 	public void addWing(String wingName) {
 		// TODO Auto-generated method stub
-
+		Graph.Node nodeName = new Graph.Node(wingName);
+		hotelBuilding.addNode(nodeName);
 	}
 
 	@Override
 	public void connectWings(String wing1, String wing2, double distance) {
 		// TODO Auto-generated method stub
-
+		hotelBuilding.addEdge(wing1, wing2, distance);
 	}
 
 	@Override
 	public void organizeCleaning() {
 		// TODO Auto-generated method stub
 
+		System.out.println("Cleaning rooms..");
+		
+		Comparable startWing = "A";
+
+		while(roomsToBeCleaned.size() != 0) {
+			Room roomToBeCleaned = (Room) roomsToBeCleaned.top();
+			Comparable destinationWing = roomToBeCleaned.getWing();
+			
+			double shortestPath = getShortestPath(startWing,destinationWing);
+			
+				try
+				{
+					System.out.println("Cleaning room - "+ roomToBeCleaned.getRoomNumber());
+					//sleeping for n seconds to depict traveling time to other destination wing
+				    Thread.sleep((long) (shortestPath * 1000));
+				}
+				catch(InterruptedException ex)
+				{
+				    Thread.currentThread().interrupt();
+				}
+			
+			roomToBeCleaned.setStatus(Global.RoomStatus.READY.toString());
+			roomsToBeCleaned.pop();
+		
+		}
+		
+		System.out.println("Rooms Cleaned");
+	}
+	
+	public double getShortestPath(Comparable startWing, Comparable destinationWing) {
+		if(startWing == destinationWing) {
+			//returning least amount of time to travel within same wing i.e. 1 min
+			return 1;
+		}
+		else {
+			
+			Graph.Node destWing = hotelBuilding.findNode(destinationWing);
+			Vector allEdges = destWing.getEdges();
+			
+			double shortestEdgeWeight = ((Graph.Edge) allEdges.get(0)).getDistance();
+			
+			for(int i=0;i<allEdges.size();i++) {
+				Graph.Edge nodeEdge = (Graph.Edge) allEdges.get(i);
+				if (nodeEdge.getDistance() < shortestEdgeWeight)
+				{
+					shortestEdgeWeight = nodeEdge.getDistance();
+				}
+			}
+			
+			//[TODO] (Pending) COULD NOT COMPLETE THE LOGIC TO FIND THE SHORTEST DISTANCE BECAUSE OF INFINITE LOOPING ISSUE
+			
+			return shortestEdgeWeight;
+		}
 	}
 
 }

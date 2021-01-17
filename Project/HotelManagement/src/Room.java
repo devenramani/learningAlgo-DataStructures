@@ -1,7 +1,7 @@
 
  public class Room {
 
-	private String wing;
+	private Graph.Node wing;
 	private String status;
 
 	private int roomNumber;
@@ -15,7 +15,7 @@
 		//empty constructor
 	}
 
-	public Room(String wing, int roomNumber, int noOfPeople, int cleaningTime, int uniqueId, String status) {
+	public Room(Graph.Node wing, int roomNumber, int noOfPeople, int cleaningTime, int uniqueId, String status) {
 		this.setWing(wing);
 		this.roomNumber = roomNumber;
 		this.noOfPeople = noOfPeople;
@@ -40,11 +40,11 @@
 		return this.roomNumber;
 	}
 
-	public String getWing() {
-		return wing;
+	public Comparable getWing() {
+		return wing.getLabel();
 	}
 
-	public void setWing(String wing) {
+	public void setWing(Graph.Node wing) {
 		this.wing = wing;
 	}
 	
