@@ -9,6 +9,8 @@
 	private int noOfPeople;
 	private int cleaningTime;
 	
+	Client clientInRoom;
+	
 	public Room() {
 		//empty constructor
 	}
@@ -44,6 +46,14 @@
 
 	public void setWing(String wing) {
 		this.wing = wing;
+	}
+	
+	public void setClientInRoom(Client clientInRoom) {
+		this.clientInRoom = clientInRoom;
+	}
+	
+	public Client getClientInRoom() {
+		return this.clientInRoom;
 	}
 		
 }

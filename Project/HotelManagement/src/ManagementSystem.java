@@ -82,6 +82,7 @@ public class ManagementSystem implements IManagementSystem {
 	@Override
 	public void printClients() {
 		System.out.println("\n-- Clients --");
+		System.out.println("ID \tName \tEmail \n");
 		// printing all the clients.
 		for (int i = 0; i < clients.size(); i++) {
 			Client client = (Client) clients.get(i);
@@ -133,6 +134,7 @@ public class ManagementSystem implements IManagementSystem {
 			client.setClientRoom(checkInRoom);
 
 			checkInRoom.setStatus(Global.RoomStatus.OCCUPIED.toString());
+			checkInRoom.setClientInRoom(client);
 
 			System.out.println(
 					"\nChecked in Double Room : " + checkInRoom.getRoomNumber() + " with Client : " + client.getName());
@@ -144,16 +146,20 @@ public class ManagementSystem implements IManagementSystem {
 	}
 
 	@Override
-	public int checkInFamilyRoom(int client) {
+	public int checkInFamilyRoom(int clientId) {
 		Room checkInRoom = getNextAvailableRoom(familyRooms);
 		if (checkInRoom.getRoomNumber() != 0) {
-			Client c = (Client) clients.get(client);
-			c.setClientRoom(checkInRoom);
+			Client client = getClient(clientId);
+			
+			if(client.getClientId() == 0) {return 0;}
+			
+			client.setClientRoom(checkInRoom);
 
 			checkInRoom.setStatus(Global.RoomStatus.OCCUPIED.toString());
+			checkInRoom.setClientInRoom(client);
 
 			System.out.println(
-					"\nChecked in Family Room : " + checkInRoom.getRoomNumber() + " with Client : " + c.getName());
+					"\nChecked in Family Room : " + checkInRoom.getRoomNumber() + " with Client : " + client.getName());
 
 			return checkInRoom.getRoomId();
 		} else {
@@ -162,14 +168,15 @@ public class ManagementSystem implements IManagementSystem {
 	}
 
 	@Override
-	public boolean checkOutRoom(int client) {
-		Client c = (Client) clients.get(client);
+	public boolean checkOutRoom(int clientId) {
+		
+		Client client = getClient(clientId);
 
-		if (c != null && c.getClientRoom() != null) {
-			Room room = c.getClientRoom();
+		if (client != null && client.getClientRoom() != null) {
+			Room room = client.getClientRoom();
 			room.setStatus(Global.RoomStatus.CHECKED_OUT.toString());
 			System.out.println("\nCheckout Successfull.");
-			return c.checkOutClient();
+			return client.checkOutClient();
 		} else {
 			System.out.println("\nError while Checking out room.");
 			return false;
@@ -208,12 +215,15 @@ public class ManagementSystem implements IManagementSystem {
 		Vector allRooms = getAllRooms();
 
 		System.out.println("\n-- Occupied Rooms --");
+		
+		System.out.println("Wing \tRoom \tStatus \tClientId \tClientName\n");
 
 		for (int i = 0; i < allRooms.size(); i++) {
 			Room room = (Room) allRooms.get(i);
 			if (room.getStatus() != Global.RoomStatus.READY.toString()
 					&& room.getStatus() != Global.RoomStatus.CHECKED_OUT.toString()) {
-				System.out.println(room.getWing() + "\t" + room.getRoomNumber() + "\t" + room.getStatus());
+				Client clientInRoom = room.getClientInRoom();
+				System.out.println(room.getWing() + "\t" + room.getRoomNumber() + "\t" + room.getStatus() + "\t" + clientInRoom.getClientId() +"\t" + clientInRoom.getName());
 			}
 		}
 	}

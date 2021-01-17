@@ -10,37 +10,38 @@ public class Main {
 		ManagementSystem mSystem = new ManagementSystem();
 
 		AtomicLong uniqueRoomNumber = new AtomicLong(101);
-
-		// adding A wing rooms
-		mSystem.addDoubleRoom("A-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
-		mSystem.addDoubleRoom("A-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.CHECKED_OUT.toString());
-		mSystem.addFamilyRoom("A-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.OCCUPIED.toString());
-		mSystem.addFamilyRoom("A-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.OCCUPIED.toString());
-
-		// adding B wing rooms
-		mSystem.addFamilyRoom("B-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
-		mSystem.addFamilyRoom("B-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.CHECKED_OUT.toString());
-		mSystem.addDoubleRoom("B-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.OCCUPIED.toString());
-		mSystem.addDoubleRoom("B-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
-
-		// adding C wing rooms
-		mSystem.addDoubleRoom("C-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
-		mSystem.addDoubleRoom("C-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.OCCUPIED.toString());
-		mSystem.addFamilyRoom("C-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
-		mSystem.addFamilyRoom("C-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
-
-		// adding D wing rooms
-		mSystem.addDoubleRoom("D-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
-		mSystem.addDoubleRoom("D-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
-		mSystem.addFamilyRoom("D-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.OCCUPIED.toString());
-		mSystem.addFamilyRoom("D-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
-
+		
 		// adding Clients
 		mSystem.addClient("John", "John@vub.be");
 		mSystem.addClient("Sam", "Sam@vub.be");
 		mSystem.addClient("Sara", "Sara@vub.be");
 		mSystem.addClient("Emily", "Emily@vub.be");
 		mSystem.addClient("Theo", "Theo@vub.be");
+
+		// adding A wing rooms
+		mSystem.addDoubleRoom("A-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
+		mSystem.addDoubleRoom("A-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
+		mSystem.addFamilyRoom("A-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
+		mSystem.addFamilyRoom("A-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
+
+		// adding B wing rooms
+		mSystem.addFamilyRoom("B-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
+		mSystem.addFamilyRoom("B-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
+		mSystem.addDoubleRoom("B-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
+		mSystem.addDoubleRoom("B-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
+
+		// adding C wing rooms
+		mSystem.addDoubleRoom("C-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
+		mSystem.addDoubleRoom("C-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
+		mSystem.addFamilyRoom("C-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
+		mSystem.addFamilyRoom("C-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
+
+		// adding D wing rooms
+		mSystem.addDoubleRoom("D-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
+		mSystem.addDoubleRoom("D-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
+		mSystem.addFamilyRoom("D-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
+		mSystem.addFamilyRoom("D-Wing", (int) uniqueRoomNumber.getAndIncrement(), Global.RoomStatus.READY.toString());
+
 
 		while (true) {
 
@@ -76,29 +77,43 @@ public class Main {
 					break;
 				case 3:
 					System.out.println("Check-In Room.");
+					
+					System.out.println("Select ClientID :");
+					mSystem.printClients();
+					
+					BufferedReader checkinClientInput= new BufferedReader(new InputStreamReader(System.in));
+					int checkinClientID= Integer.parseInt(checkinClientInput.readLine());
 
 					System.out.println("1. Double Room.");
 					System.out.println("2. Family Room.");
-
+					
 					BufferedReader checkinOptions = new BufferedReader(new InputStreamReader(System.in));
 
 					int checkinOption = Integer.parseInt(checkinOptions.readLine());
 
 					switch (checkinOption) {
 					case 1:
-						System.out.println("Check-In Double Room.");
-						mSystem.checkInDoubleRoom(1);
+						System.out.println("Check-In Double Room:");
+						mSystem.checkInDoubleRoom(checkinClientID);
 						break;
 					case 2:
-						System.out.println("Check-In Family Room.");
+						System.out.println("Check-In Family Room:");
+						mSystem.checkInFamilyRoom(checkinClientID);
 						break;
 					default:
 						System.out.println("Incorrect Option.");
 					}
-
 					break;
 				case 4:
-					System.out.println("Check-Out Room.");
+					System.out.println("\nCheck-Out Room:");
+					mSystem.printOccupiedRooms();
+					System.out.println("\n Enter ClientId to Check-Out :");
+					
+					BufferedReader clientIdToCheckOut = new BufferedReader(new InputStreamReader(System.in));
+					int clientID = Integer.parseInt(clientIdToCheckOut.readLine());
+					
+					mSystem.checkOutRoom(clientID);
+					
 					break;
 				case 5:
 					System.out.println("Case 5");
