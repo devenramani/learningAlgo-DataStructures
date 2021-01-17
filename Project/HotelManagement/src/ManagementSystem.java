@@ -307,7 +307,7 @@ public class ManagementSystem implements IManagementSystem {
 				}
 			}
 			
-			//[TODO] (Pending) COULD NOT COMPLETE THE LOGIC TO FIND THE SHORTEST DISTANCE BECAUSE OF INFINITE LOOPING ISSUE
+			//[TODO] Finding the shortest path between wings
 			
 			return shortestEdgeWeight;
 		}
